@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 function Home() {
-  // Array of hero images
+  // Array of hero images as objects with updated captions
   const images = [
-    'https://www.ritiriwaz.com/wp-content/uploads/2019/11/Jharkhand-Culture-696x392.jpg',
-    'https://th.bing.com/th?id=OSK.HEROdWBDIYrGon5_z7qvlN-mp9QoAh4E8ZBh6_H1dYK7R30&w=472&h=280&c=1&rs=2&o=6&dpr=1.3&pid=SANGAM',
-    'https://th.bing.com/th?id=OIP.1InnSCcX7ynGFrkrt_JCuQHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    'https://th.bing.com/th/id/OIP.sWSabr6-iQyBCSXruYy28AHaEZ?w=278&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    'https://th.bing.com/th?id=OIP.KCSfxWG94fAngHGxdBHc4AHaEx&w=311&h=200&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    'https://th.bing.com/th?id=OIP.dcjLhsHmtMjA6KT-oxb6hQHaGC&w=277&h=225&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2'
+    {
+      src: 'https://www.ritiriwaz.com/wp-content/uploads/2019/11/Jharkhand-Culture-696x392.jpg',
+      alt: 'Jharkhand Culture',
+      caption: 'Experience the vibrant culture of Jharkhand'
+    },
+    {
+      src: 'https://th.bing.com/th?id=OSK.HEROdWBDIYrGon5_z7qvlN-mp9QoAh4E8ZBh6_H1dYK7R30&w=472&h=280&c=1&rs=2&o=6&dpr=1.3&pid=SANGAM',
+      alt: 'Jharkhand Nature',
+      caption: 'Explore the natural beauty of the state'
+    },
+    {
+      src: 'https://th.bing.com/th?id=OIP.1InnSCcX7ynGFrkrt_JCuQHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
+      alt: 'Jharkhand Waterfall',
+      caption: 'Witness the stunning Lakes'
+    },
+    {
+      src: 'https://th.bing.com/th/id/OIP.sWSabr6-iQyBCSXruYy28AHaEZ?w=278&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+      alt: 'Jharkhand Wildlife',
+      caption: 'Magnificient Industries'
+    },
+    {
+      src: 'https://th.bing.com/th?id=OIP.KCSfxWG94fAngHGxdBHc4AHaEx&w=311&h=200&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
+      alt: 'Jharkhand Temples',
+      caption: 'Immerse in the architectural marvels of Jharkhand’s temples, where every stone tells a story of devotion.'
+    },
+    {
+      src: 'https://th.bing.com/th?id=OIP.dcjLhsHmtMjA6KT-oxb6hQHaGC&w=277&h=225&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
+      alt: 'Jharkhand Traditional Dance',
+      caption: 'Enjoy panorama'
+    }
   ];
 
-  // useState hook to manage the current image index
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Function to change the image index on hover
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000); // Change image every 3 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [images.length]);
+
   const handleDotHover = (index) => {
     setCurrentImageIndex(index);
   };
@@ -23,13 +53,27 @@ function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <motion.section
-        className="relative h-[500px] bg-cover bg-center"
-        style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
+      <div className="relative h-[500px] overflow-hidden">
+        {/* Animated image container */}
+        {images.map((image, index) => (
+          <motion.section
+            key={index}
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{
+              opacity: index === currentImageIndex ? 1 : 0,
+              scale: index === currentImageIndex ? 1 : 1.1,
+            }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          >
+            <img
+              src={image.src}
+              alt={image.alt}
+              className="object-cover w-full h-full" // Updated to object-cover
+            />
+          </motion.section>
+        ))}
+
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center bg-black bg-opacity-50">
           {/* Enlarged and Styled "जोहार" */}
           <motion.h1
@@ -49,6 +93,15 @@ function Home() {
           >
             Welcome to the Land of Forests
           </motion.p>
+          {/* Display Caption with effects */}
+          <motion.p
+            className="mt-4 text-xl italic text-white transition-transform duration-300 transform hover:scale-110"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {images[currentImageIndex].caption}
+          </motion.p>
         </div>
 
         {/* Dots for switching images */}
@@ -63,7 +116,7 @@ function Home() {
             ></div>
           ))}
         </div>
-      </motion.section>
+      </div>
 
       {/* History Section */}
       <motion.section
